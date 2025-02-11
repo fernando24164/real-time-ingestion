@@ -1,0 +1,47 @@
+{
+  "index_name": "ingestion",
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0,
+      "refresh_interval": "1s",
+      "translog": {
+        "durability": "async",
+        "sync_interval": "5s",
+        "flush_threshold_size": "512mb"
+      },
+      "bulk": {
+        "size": "5000",
+        "queue_size": "1000"
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "customer_id": {
+        "type": "integer",
+        "doc_values": false
+      },
+      "product_id": {
+        "type": "integer",
+        "doc_values": false
+      },
+      "genre": {
+        "type": "keyword",
+        "doc_values": false
+      },
+      "price": {
+        "type": "float",
+        "doc_values": false
+      },
+      "timestamp": {
+        "type": "date",
+        "format": "date_time"
+      },
+      "page": {
+        "type": "keyword",
+        "doc_values": false
+      }
+    }
+  }
+}
