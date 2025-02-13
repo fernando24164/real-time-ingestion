@@ -9,38 +9,29 @@
         "durability": "async",
         "sync_interval": "5s",
         "flush_threshold_size": "512mb"
-      },
-      "bulk": {
-        "size": "5000",
-        "queue_size": "1000"
       }
     }
   },
   "mappings": {
     "properties": {
       "customer_id": {
-        "type": "integer",
-        "doc_values": false
+        "type": "integer"
       },
       "product_id": {
-        "type": "integer",
-        "doc_values": false
+        "type": "integer"
       },
       "genre": {
-        "type": "keyword",
-        "doc_values": false
+        "type": "keyword"
       },
       "price": {
-        "type": "float",
-        "doc_values": false
+        "type": "float"
       },
       "timestamp": {
         "type": "date",
         "format": "date_time"
       },
       "page": {
-        "type": "keyword",
-        "doc_values": false
+        "type": "keyword"
       }
     }
   }
