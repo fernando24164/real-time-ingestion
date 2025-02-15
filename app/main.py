@@ -15,7 +15,7 @@ from app.core.events import shutdown_db_clients, startup_db_clients
 async def lifespan(app: FastAPI):
     startup_db_clients(app)
     yield
-    shutdown_db_clients(app)
+    await shutdown_db_clients(app)
 
 
 def get_application() -> FastAPI:
