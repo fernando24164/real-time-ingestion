@@ -7,6 +7,7 @@ services:
       - discovery.type=single-node
       - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
       - bootstrap.memory_lock=true
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD="DigitalReign@2025"
     ulimits:
       memlock:
         soft: -1
@@ -23,8 +24,8 @@ services:
       - "6379:6379"
   fastapi:
     build:
-      context: ./app
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./app/Dockerfile
     ports:
       - "8000:8000"
     depends_on:
