@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     OPENSEARCH_CONFIG: dict = {
         "host": "localhost",
         "port": 9200,
+        "username": "admin",
+        "password": "DigitalReign@2025",
     }
     
     # API Settings
