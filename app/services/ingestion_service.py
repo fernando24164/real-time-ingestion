@@ -10,7 +10,8 @@ async def ingest_data_service(
         index="ingestion", body=data.model_dump(), refresh=True
     )
 
-    pipeline = redis_client.pipeline()
-    pipeline.rpush(f"last_viewed:{data.customer_id}", data.product_id)
-    pipeline.ltrim(f"last_viewed:{data.customer_id}", 0, 9)
-    await pipeline.execute()
+    if data.product_id:
+        pipeline = redis_client.pipeline()
+        pipeline.rpush(f"last_viewed:{data.customer_id}", data.product_id)
+        pipeline.ltrim(f"last_viewed:{data.customer_id}", 0, 9)
+        await pipeline.execute()

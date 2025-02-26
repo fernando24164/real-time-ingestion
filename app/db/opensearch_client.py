@@ -1,13 +1,10 @@
-import http
-from typing import Any, Optional
-
 from opensearchpy._async.client import AsyncOpenSearch
 
-from app.core.config import get_settings
+from app.core.config import Settings, get_settings
 
 
 def connect_opensearch(
-    settings: Optional[dict[str, Any]] = get_settings(),
+    settings: Settings = get_settings(),
 ) -> AsyncOpenSearch:
     try:
         return AsyncOpenSearch(
