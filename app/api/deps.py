@@ -13,5 +13,5 @@ def get_redis_connection(request: Request):
     return redis.Redis.from_pool(request.app.state.redis_pool)
 
 
-GetOpenSearchClient = Annotated[AsyncOpenSearch, Depends(get_async_opensearch_client)]
-GetRedisConnection = Annotated[redis.Redis, Depends(get_redis_connection)]
+OpenSearchClientDep = Annotated[AsyncOpenSearch, Depends(get_async_opensearch_client)]
+RedisConnectionDep = Annotated[redis.Redis, Depends(get_redis_connection)]

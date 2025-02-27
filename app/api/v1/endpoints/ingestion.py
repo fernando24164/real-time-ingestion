@@ -1,7 +1,7 @@
 from fastapi.background import BackgroundTasks
 from fastapi.routing import APIRouter
 
-from app.api.deps import GetOpenSearchClient, GetRedisConnection
+from app.api.deps import OpenSearchClientDep, RedisConnectionDep
 from app.schemas.ingestion import IngestionSchema
 from app.services.ingestion_service import ingest_data_service
 
@@ -12,8 +12,8 @@ ingestion_router = APIRouter(tags=["Ingestion"])
 async def ingest_data(
     data: IngestionSchema,
     background_tasks: BackgroundTasks,
-    opensearch_client: GetOpenSearchClient,
-    redis_client: GetRedisConnection,
+    opensearch_client: OpenSearchClientDep,
+    redis_client: RedisConnectionDep,
 ) -> dict:
     background_tasks.add_task(
         ingest_data_service, data, opensearch_client, redis_client

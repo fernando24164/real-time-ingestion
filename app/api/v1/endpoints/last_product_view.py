@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from app.api.deps import GetRedisConnection
+from app.api.deps import RedisConnectionDep
 
 last_viewed_router = APIRouter(tags=["Last viewed products"])
 
 
 @last_viewed_router.get("/last_product_viewed", response_model=dict)
 async def last_product_view(
-    redis_client: GetRedisConnection,
+    redis_client: RedisConnectionDep,
     customer_id: int = Query(..., description="Customer ID"),
 ) -> dict:
     """
