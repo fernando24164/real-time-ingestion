@@ -1,0 +1,2 @@
+class NoLastViewed(Exception):
+    pass

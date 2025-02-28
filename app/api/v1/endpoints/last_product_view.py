@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from app.api.deps import RedisConnectionDep
+from app.services.exceptions import NoLastViewed
+from app.services.retrieve_last_viewed import get_last_viewed
 
 last_viewed_router = APIRouter(tags=["Last viewed products"])
 
@@ -13,12 +15,9 @@ async def last_product_view(
     """
     Retrieve the last viewed product for a specific customer.
     """
-    last_product = await redis_client.get(f"last_viewed:{customer_id}")
+    try:
+        products = await get_last_viewed(customer_id, redis_client)
+    except NoLastViewed as e:
+        raise HTTPException(status_code=204, detail=str(e))
 
-    if not last_product:
-        raise HTTPException(
-            status_code=404,
-            detail=f"No last viewed product found for customer {customer_id}",
-        )
-
-    return {"last_viewed_product": last_product.decode("utf-8")}
+    return products
