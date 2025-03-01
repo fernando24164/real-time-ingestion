@@ -21,7 +21,7 @@ def test_app():
     def get_test_redis_client():
         client_mock = AsyncMock(spec=redis.Redis)
         client_mock.lrange = AsyncMock(
-            side_effect=lambda key, start, stop: b"product_123"
+            side_effect=lambda key, start, stop: [b"123"]
             if key == "last_viewed:123"
             else None
         )
