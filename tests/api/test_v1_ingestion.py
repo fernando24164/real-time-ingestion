@@ -28,7 +28,7 @@ class TestIngestData:
             data=test_data,
             background_tasks=BackgroundTasks,
             redis_client=mock_client,
-            postgres_session=pg_mock_client
+            postgres_session=pg_mock_client,
         )
 
         assert response == {"message": "Data ingested successfully"}
@@ -36,6 +36,7 @@ class TestIngestData:
     @pytest.mark.asyncio
     async def test_missing_required_fields(self, mocker):
         mock_client = mocker.AsyncMock()
+        pg_mock_client = mocker.AsyncMock()
         background_tasks = BackgroundTasks()
 
         invalid_data = {"product_id": 456, "genre": "test", "price": 9.99}
@@ -45,6 +46,7 @@ class TestIngestData:
                 data=IngestionSchema(**invalid_data),
                 background_tasks=background_tasks,
                 redis_client=mock_client,
+                postgres_session=pg_mock_client,
             )
 
 
