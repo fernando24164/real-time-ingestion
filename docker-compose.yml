@@ -1,27 +1,20 @@
 version: '3.8'
 
 services:
-  opensearch:
-    image: opensearchproject/opensearch:latest
-    environment:
-      - discovery.type=single-node
-      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
-      - bootstrap.memory_lock=true
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD="DigitalReign@2025"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    ports:
-      - "9200:9200"
-      - "9600:9600"
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
+    volumes:
+      - ./db/redis:/data
+  postgres:
+    image: postgres:17-alpine3.20
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
   fastapi:
     build:
       context: .
@@ -29,5 +22,5 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - opensearch
+      - postgres
       - redis

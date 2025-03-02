@@ -1,17 +1,19 @@
-from app.schemas.ingestion import IngestionSchema
-from opensearchpy._async.client import AsyncOpenSearch
 import redis.asyncio as redis
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.web_event import WebEvents
+from app.schemas.ingestion import IngestionSchema
 
 
 async def ingest_data_service(
-    data: IngestionSchema, opensearch_client: AsyncOpenSearch, redis_client: redis.Redis
+    data: IngestionSchema, redis_client: redis.Redis, postgres_session: AsyncSession
 ) -> None:
-    await opensearch_client.index(
-        index="ingestion", body=data.model_dump(), refresh=True
-    )
-
     if data.product_id:
         pipeline = redis_client.pipeline()
         pipeline.rpush(f"last_viewed:{data.customer_id}", data.product_id)
         pipeline.ltrim(f"last_viewed:{data.customer_id}", 0, 9)
         await pipeline.execute()
+
+    web_event = WebEvents(**data.model_dump())
+    postgres_session.add(web_event)
+    await postgres_session.commit()

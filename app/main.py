@@ -13,7 +13,7 @@ from app.core.events import shutdown_db_clients, startup_db_clients
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    startup_db_clients(app)
+    await startup_db_clients(app)
     yield
     await shutdown_db_clients(app)
 

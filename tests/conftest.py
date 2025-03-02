@@ -2,21 +2,21 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 import redis
+import redis.asyncio
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from opensearchpy._async.client import AsyncOpenSearch
-import redis.asyncio
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_async_opensearch_client, get_redis_connection
+from app.api.deps import get_redis_connection, get_pg_connection
 from app.main import app
 
 
 @pytest.fixture
 def test_app():
-    def get_test_opensearch_client():
-        client_mock = AsyncMock(spec=AsyncOpenSearch)
-        client_mock.index = AsyncMock(side_effect=lambda index, body, refresh: True)
-        return client_mock
+    def get_test_session_factory():
+        pg_mock_client = AsyncMock(spec=AsyncSession)
+        pg_mock_client.add = AsyncMock(lambda: True)
+        return pg_mock_client
 
     def get_test_redis_client():
         client_mock = AsyncMock(spec=redis.Redis)
@@ -37,8 +37,8 @@ def test_app():
 
     app.state.redis_pool = redis_mock
 
-    app.dependency_overrides[get_async_opensearch_client] = get_test_opensearch_client
     app.dependency_overrides[get_redis_connection] = get_test_redis_client
+    app.dependency_overrides[get_pg_connection] = get_test_session_factory
     yield app
 
 
