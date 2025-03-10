@@ -1,3 +1,4 @@
+import logging
 import sys
 from functools import lru_cache
 from typing import Optional
@@ -6,7 +7,7 @@ from loguru import logger
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-from app.core.logging import logging
+from app.core.logging import logging as logging_config
 
 
 class Settings(BaseSettings):
@@ -34,15 +35,6 @@ class Settings(BaseSettings):
         default="redis://localhost:6379", description="Redis connection string"
     )
 
-    def set_config(self):
-        logger.remove()
-        logger.add(
-            sys.stdout,
-            colorize=True,
-            level=logging.LOGGER_LEVEL,
-            format=logging.LOGGER_FORMAT,
-        )
-
     class Config:
         env_file = ".env"
         case_sensitive = True
@@ -55,3 +47,41 @@ def get_settings() -> Settings:
     Use this function to get settings throughout the application.
     """
     return Settings()
+
+
+class InterceptHandler(logging.Handler):
+    def emit(self, record: logging.LogRecord) -> None:
+        """
+        Emits a logging record to Loguru.
+
+        Translates the log level, finds the original caller, and logs the message using Loguru.
+        """
+        try:
+            level: str = logger.level(record.levelname).name
+        except ValueError:
+            level: int = record.levelno
+
+        frame, depth = logging.currentframe(), 2
+        while frame and frame.f_code.co_filename == logging.__file__:
+            frame = frame.f_back
+            depth += 1
+
+        logger.opt(depth=depth, exception=record.exc_info).log(
+            level, record.getMessage()
+        )
+
+
+class LoggingConfig:
+    """Logging configuration to be set for the server"""
+
+    # Intercept handler to redirect standard logging to Loguru
+    logging.basicConfig(handlers=[InterceptHandler()], level=0)
+
+    def set_config_logger(self):
+        logger.remove()
+        logger.add(
+            sys.stdout,
+            colorize=True,
+            level=logging_config.LOGGER_LEVEL,
+            format=logging_config.LOGGER_FORMAT,
+        )
