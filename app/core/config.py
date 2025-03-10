@@ -1,7 +1,12 @@
+import sys
 from functools import lru_cache
 from typing import Optional
+
+from loguru import logger
 from pydantic import Field
 from pydantic_settings import BaseSettings
+
+from app.core.logging import logging
 
 
 class Settings(BaseSettings):
@@ -28,6 +33,15 @@ class Settings(BaseSettings):
     REDIS_URL: Optional[str] = Field(
         default="redis://localhost:6379", description="Redis connection string"
     )
+
+    def set_config(self):
+        logger.remove()
+        logger.add(
+            sys.stdout,
+            colorize=True,
+            level=logging.LOGGER_LEVEL,
+            format=logging.LOGGER_FORMAT,
+        )
 
     class Config:
         env_file = ".env"

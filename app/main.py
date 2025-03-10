@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 
 from app.api.exceptions import validation_exception_handler
 from app.api.main import api_router
@@ -13,8 +14,10 @@ from app.core.events import shutdown_db_clients, startup_db_clients
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Starting application")
     await startup_db_clients(app)
     yield
+    logger.info("Stopping application")
     await shutdown_db_clients(app)
 
 
