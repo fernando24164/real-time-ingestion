@@ -8,8 +8,9 @@ from loguru import logger
 
 from app.api.exceptions import validation_exception_handler
 from app.api.main import api_router
-from app.core.config import LoggingConfig, get_settings
+from app.core.config import get_settings
 from app.core.events import shutdown_db_clients, startup_db_clients
+from app.core.logging import set_logger
 
 
 @asynccontextmanager
@@ -24,7 +25,7 @@ async def lifespan(app: FastAPI):
 def get_application() -> FastAPI:
     """Returns a FastAPI application instance."""
     settings = get_settings()
-    LoggingConfig().set_config_logger()
+    set_logger()
     app = FastAPI(
         description=settings.PROJECT_NAME,
         version=settings.VERSION,

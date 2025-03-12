@@ -16,4 +16,4 @@ COPY ./app ./app
 EXPOSE 8000
 
 # Command to run the FastAPI application
-CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker","--config", "app/core/gunicorn_config.json", "app.main:app"]
