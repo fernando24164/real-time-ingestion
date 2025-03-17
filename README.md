@@ -44,6 +44,36 @@ pytest tests/
 
 The test suite includes unit tests for the Athena client, S3 client, and PostgreSQL exporter. Mocking is used extensively to avoid dependencies on external services.
 
+## Manage migrations with Alembic
+
+Alembic is a database migration tool for SQLAlchemy. It allows you to manage database schema changes in a version-controlled way.
+
+Use these commands to manage migrations:
+
+Initialize migrations (first time only) with async:
+
+```sh
+alembic init --template async alembic
+```  
+
+Create a new migration when you change models:
+
+```sh
+alembic revision --autogenerate -m "description of changes"
+```
+
+Apply migrations:
+
+```sh
+alembic upgrade head
+```
+
+Rollback migrations:
+
+```sh
+alembic downgrade -1
+```
+
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
