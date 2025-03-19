@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, AsyncGenerator
 
 import redis.asyncio as redis
 from fastapi import Depends, Request
@@ -9,9 +9,12 @@ def get_redis_connection(request: Request):
     return redis.Redis.from_pool(request.app.state.redis_pool)
 
 
-async def get_pg_connection(request: Request):
-    async with request.app.state.session_factory() as session:
-        return session
+async def get_pg_connection(request: Request) -> AsyncGenerator[AsyncSession, None]:
+    try:
+        async with request.app.state.session_factory() as session:
+            yield session
+    except Exception as e:
+        raise e
 
 
 RedisConnectionDep = Annotated[redis.Redis, Depends(get_redis_connection)]
