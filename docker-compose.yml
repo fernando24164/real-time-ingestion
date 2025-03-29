@@ -7,20 +7,34 @@ services:
       - "6379:6379"
     volumes:
       - ./db/redis:/data
+
   postgres:
     image: postgres:17-alpine3.20
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
       - ./db/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   fastapi:
     build:
       context: .
       dockerfile: ./app/Dockerfile
+    environment:
+      POSTGRES_DATABASE_URL: "postgresql+asyncpg://postgres:mysecretpassword@postgres:5432/postgres"
+      REDIS_URL: "redis://redis:6379/0"
     ports:
       - "8000:8000"
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started

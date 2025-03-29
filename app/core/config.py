@@ -8,10 +8,14 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings/configuration class"""
 
-    POSTGRES_AUTH: dict = {"user": "postgres", "password": "mysecretpassword"}
-    POSTGRES_DATABASE_URL: str = f"postgresql+asyncpg://{POSTGRES_AUTH.get('user')}:{POSTGRES_AUTH.get('password')}@localhost:5432"
-    PG_POOL_SIZE: int = 5
-    PG_POOL_OVERFLOW: int = 10
+    # Database Settings
+    POSTGRES_DATABASE_URL: str = Field(
+        default="postgresql+asyncpg://postgres:mysecretpassword@localhost:5432/postgres",
+        env="DATABASE_URL",
+        description="Database connection string",
+    )
+    PG_POOL_SIZE: int = Field(default=5, env="PG_POOL_SIZE")
+    PG_POOL_OVERFLOW: int = Field(default=10, env="PG_POOL_OVERFLOW")
 
     # API Settings
     API_V1_PREFIX: str = "/api/v1"
@@ -21,13 +25,17 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
 
     # CORS Settings
-    CORS_ORIGINS: list[str] = ["http://localhost:3000"]
-    CORS_METHODS: list[str] = ["*"]
-    CORS_HEADERS: list[str] = ["*"]
+    CORS_ORIGINS: list[str] = Field(
+        default=["http://localhost:3000"], env="CORS_ORIGINS"
+    )
+    CORS_METHODS: list[str] = Field(default=["*"], env="CORS_METHODS")
+    CORS_HEADERS: list[str] = Field(default=["*"], env="CORS_HEADERS")
 
     # Cache Settings
     REDIS_URL: Optional[str] = Field(
-        default="redis://localhost:6379", description="Redis connection string"
+        default="redis://localhost:6379/0",
+        env="REDIS_URL",
+        description="Redis connection string",
     )
 
     class Config:
