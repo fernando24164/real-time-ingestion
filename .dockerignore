@@ -1,0 +1,43 @@
+# Version control
+.git
+.gitignore
+.github/
+
+# Development environments
+.vscode/
+.DS_Store
+
+# Build artifacts
+dist/
+build/
+out/
+coverage/
+*.log
+logs/
+tmp/
+
+# Environment and secrets
+.env
+
+# Documentation
+README.md
+CHANGELOG.md
+docs/
+*.md
+
+# Testing
+test/
+tests/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+#python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+venv/
+.venv/
