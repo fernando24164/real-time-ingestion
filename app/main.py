@@ -11,6 +11,7 @@ from app.api.main import api_router
 from app.core.config import get_settings
 from app.core.events import shutdown_db_clients, startup_db_clients
 from app.core.logging import set_logger
+from app.metrics import setup_metrics
 
 
 @asynccontextmanager
@@ -35,6 +36,8 @@ def get_application() -> FastAPI:
     )
 
     app.include_router(api_router)
+
+    setup_metrics(app, metrics_endpoint=False, metrics_port=8001)
 
     if settings.CORS_ORIGINS:
         app.add_middleware(

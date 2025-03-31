@@ -13,3 +13,4 @@ httpx==0.28.1
 redis==5.2.1
 loguru==0.7.3
 alembic==1.15.1
+prometheus-client==0.21.1
