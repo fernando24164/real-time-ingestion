@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, Any
 
-from pydantic import BaseModel, NaiveDatetime
+from pydantic import BaseModel, Field, NaiveDatetime
 
 
 class IngestionSchema(BaseModel):
@@ -22,3 +22,17 @@ class IngestionSchema(BaseModel):
     price: Optional[float] = None
     timestamp: NaiveDatetime
     page: str
+
+
+class IngestionResponse(BaseModel):
+    """
+    Response model for data ingestion endpoints.
+    
+    Attributes:
+        status (str): Status of the ingestion request (e.g., "accepted", "failed")
+        message (str): Human-readable description of the result
+        request_id (Any): Identifier that can be used to track this specific request
+    """
+    status: str = Field(..., description="Status of the ingestion request")
+    message: str = Field(..., description="Human-readable description of the result")
+    request_id: Any = Field(..., description="Identifier for tracking this request")

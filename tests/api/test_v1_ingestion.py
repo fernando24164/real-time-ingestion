@@ -31,7 +31,7 @@ class TestIngestData:
             postgres_session=pg_mock_client,
         )
 
-        assert response == {"message": "Data ingested successfully"}
+        assert response.status == "accepted"
 
     @pytest.mark.asyncio
     async def test_missing_required_fields(self, mocker):
@@ -64,8 +64,8 @@ class TestIngestDataEndpoint:
 
         response = client.post("/api/v1/ingest", json=test_data)
 
-        assert response.status_code == 200
-        assert response.json() == {"message": "Data ingested successfully"}
+        assert response.status_code == 202
+        assert response.json().get('status') == "accepted"
 
     @pytest.mark.asyncio
     def test_ingest_data_endpoint_invalid_data(self, client):
