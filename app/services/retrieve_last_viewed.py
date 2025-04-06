@@ -1,12 +1,14 @@
 from typing import List
+
 import redis.asyncio as redis
 
+from app.schemas.last_viewed import LastViewedProducts
 from app.services.exceptions import NoLastViewed
 
 
 async def get_last_viewed(
     customer_id: int, redis_client: redis.Redis, start: int = 0, stop: int = 9
-) -> dict:
+) -> LastViewedProducts:
     products: List[bytes] = await redis_client.lrange(
         f"last_viewed:{customer_id}", start, stop
     )
@@ -17,4 +19,4 @@ async def get_last_viewed(
 
     products_decoded = [product.decode("utf-8") for product in products]
 
-    return {"last_viewed_product": products_decoded}
+    return LastViewedProducts(last_viewed_products=products_decoded)

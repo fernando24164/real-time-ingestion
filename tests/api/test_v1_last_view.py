@@ -17,7 +17,7 @@ class TestLastProductView:
         )
 
         mock_redis.lrange.assert_called_once_with(f"last_viewed:{customer_id}", 0, 9)
-        assert result == {"last_viewed_product": ["123"]}
+        assert result.data.last_viewed_products == ["123"]
 
     @pytest.mark.asyncio
     async def test_raises_404_when_no_product_exists(self, mocker):
@@ -41,7 +41,7 @@ class TestLastProductViewEndpoint:
         response = client.get(f"/api/v1/last_product_viewed?customer_id={customer_id}")
 
         assert response.status_code == 200
-        assert response.json() == {"last_viewed_product": expected_product}
+        assert response.json().get('data') == {"last_viewed_products": expected_product}
 
     def test_get_last_viewed_product_not_found(self, client: TestClient):
         customer_id = 456
