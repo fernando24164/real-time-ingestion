@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
 from loguru import logger
 
 from app.api.exceptions import validation_exception_handler
@@ -33,6 +34,7 @@ def get_application() -> FastAPI:
         lifespan=lifespan,
         debug=settings.DEBUG,
         docs_url="/docs",
+        default_response_class=ORJSONResponse
     )
 
     app.include_router(api_router)
