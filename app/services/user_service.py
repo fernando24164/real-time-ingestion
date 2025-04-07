@@ -4,12 +4,13 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.web_event import User
+from app.schemas.user import User as UserSchema
 from app.services.exceptions import NoUser
 
 
 async def get_user_by_id(
     customer_id: int, postgres_session: AsyncSession
-) -> Optional[User]:
+) -> Optional[UserSchema]:
     """
     Args:
         customer_id: The ID of the user to retrieve
@@ -28,4 +29,6 @@ async def get_user_by_id(
     if not user:
         raise NoUser(f"No user found for the customer {customer_id}")
 
-    return user
+    return UserSchema(
+        id=user.id, username=user.username, email=user.email, created_at=user.created_at
+    )
