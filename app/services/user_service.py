@@ -29,6 +29,4 @@ async def get_user_by_id(
     if not user:
         raise NoUser(f"No user found for the customer {customer_id}")
 
-    return UserSchema(
-        id=user.id, username=user.username, email=user.email, created_at=user.created_at
-    )
+    return UserSchema(**user.__dict__)
