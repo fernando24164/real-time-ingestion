@@ -29,4 +29,4 @@ async def get_user_by_id(
     if not user:
         raise NoUser(f"No user found for the customer {customer_id}")
 
-    return UserSchema(**user.__dict__)
+    return UserSchema.model_validate(user)
