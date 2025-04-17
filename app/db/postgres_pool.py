@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.core.config import get_settings
-from app.models.web_event import Base
+from app.models.game_store import Base
 
 
 def create_engine_pg(config=get_settings()) -> AsyncEngine:

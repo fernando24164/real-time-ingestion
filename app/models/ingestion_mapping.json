@@ -14,7 +14,7 @@
   },
   "mappings": {
     "properties": {
-      "customer_id": {
+      "user_id": {
         "type": "integer"
       },
       "product_id": {

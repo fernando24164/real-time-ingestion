@@ -3,17 +3,17 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.web_event import User
+from app.models.game_store import User
 from app.schemas.user import User as UserSchema
 from app.services.exceptions import NoUser
 
 
 async def get_user_by_id(
-    customer_id: int, postgres_session: AsyncSession
+    user_id: int, postgres_session: AsyncSession
 ) -> Optional[UserSchema]:
     """
     Args:
-        customer_id: The ID of the user to retrieve
+        user_id: The ID of the user to retrieve
         postgres_session: The async database session
 
     Returns:
@@ -22,11 +22,11 @@ async def get_user_by_id(
     Raises:
         NoUser: If no user is found with the given ID
     """
-    query = select(User).where(User.id == customer_id)
+    query = select(User).where(User.id == user_id)
     result = await postgres_session.execute(query)
     user = result.scalars().first()
 
     if not user:
-        raise NoUser(f"No user found for the customer {customer_id}")
+        raise NoUser(f"No user found for the customer {user_id}")
 
     return UserSchema.model_validate(user)

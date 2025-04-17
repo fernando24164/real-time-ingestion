@@ -8,21 +8,22 @@ class IngestionSchema(BaseModel):
     A Pydantic model for data ingestion schema, used for customer activity tracking.
 
     Attributes:
-        customer_id (int): Required. Identifier for the customer.
-        product_id (Optional[int]): Optional. Identifier for the product.
-        genre (Optional[str]): Optional. Category or genre of the product.
-        price (Optional[float]): Optional. Price of the product.
+        user_id (int): Required. Identifier for the user.
+        game_id (Optional[int]): Optional. Identifier for the game.
+        event_type (str): Required. Type of event (e.g., "VIEW", "ADD_TO_CART", "REMOVE_FROM_CART", "WISHLIST", "PURCHASE", "REVIEW")
+        session_id (str): Required. Unique identifier for the user's session.
+        time_spent (Optional[int]): Optional. Time spent on the game page in seconds.
         timestamp (datetime): Required. Time of the event.
         page (str): Required. Webpage location of the event.
     """
 
-    customer_id: int
-    product_id: Optional[int] = None
-    genre: Optional[str] = None
-    price: Optional[float] = None
+    user_id: int
+    game_id: Optional[int] = None
+    event_type: str
+    session_id: str
+    time_spent: Optional[int] = None
     timestamp: NaiveDatetime
-    page: str
-
+    referrer_page: str
 
 class IngestionResponse(BaseModel):
     """

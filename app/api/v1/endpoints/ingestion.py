@@ -29,13 +29,13 @@ async def ingest_data(
     data: IngestionSchema = Body(..., max_size=1024 * 1024),  # 1MB limit
 ) -> IngestionResponse:
     """
-    Ingest customer activity data.
+    Ingest user activity data.
 
     This endpoint queues the data for processing in a background task.
     The response is immediate while processing continues asynchronously.
 
     Args:
-        data: The customer activity data to ingest
+        data: The user activity data to ingest
         background_tasks: FastAPI background tasks handler
         redis_client: Redis connection for caching recent views
         postgres_session: Database session for persistent storage
