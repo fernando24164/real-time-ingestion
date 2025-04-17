@@ -9,6 +9,28 @@ Another service that depend on Redis will retrieve a list of last product viewed
 
 <img src="media/diagram.png" alt="Diagram" style="display:block;margin-left:auto;margin-right:auto;">
 
+## Data model
+
+The data model of game store is defined in the `app/models/game_store.py` file. It includes the following models:
+
+<img src="media/data-model.svg" alt="ERD" style="display:block;margin-left:auto;margin-right:auto;">
+
+### Legend
+
+Line Types:
+
+    Solid lines (--): Represent non-identifying relationships where entities can exist independently
+      
+    Lines with dots (-.-): Represent identifying relationships where one entity depends on the existence of another
+
+Cardinality Markers:
+
+    |o (Zero or one): The entity can have zero or one instance of the related entity
+    || (Exactly one): The entity must have exactly one instance of the related entity
+    }| (One or more): The entity must have at least one instance of the related entity
+    o{ (Zero or more): The entity can have any number of instances of the related entity
+
+
 ## How to install
 
 1. Install Dependencies:
@@ -53,7 +75,7 @@ Use these commands to manage migrations:
 Initialize migrations (first time only) with async:
 
 ```sh
-alembic init --template async alembic
+alembic init --template async migrations
 ```  
 
 Create a new migration when you change models:
@@ -73,6 +95,11 @@ Rollback migrations:
 ```sh
 alembic downgrade -1
 ```
+
+## Load SQL mock data
+
+Launch postgres container and access to /scripts folder
+then run seed_database.py script. Read the README.md file in the scripts folder for more information.
 
 ## License
 
