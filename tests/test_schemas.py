@@ -8,35 +8,46 @@ from app.schemas.ingestion import IngestionSchema
 class TestIngestionSchema:
     def test_create_valid_schema_with_required_fields(self):
         timestamp = datetime.datetime.now()
-        schema = IngestionSchema(customer_id=123, timestamp=timestamp, page="/home")
+        schema = IngestionSchema(
+            user_id=123,
+            timestamp=timestamp,
+            referrer_page="/home",
+            event_type="VIEW",
+            session_id="session_1",
+        )
 
-        assert schema.customer_id == 123
+        assert schema.user_id == 123
         assert schema.timestamp == timestamp
-        assert schema.page == "/home"
-        assert schema.product_id is None
-        assert schema.genre is None
-        assert schema.price is None
+        assert schema.referrer_page == "/home"
+        assert schema.game_id is None
+        assert schema.event_type == "VIEW"
+        assert schema.session_id == "session_1"
 
-    def test_create_schema_without_customer_id_fails(self):
+    def test_create_schema_without_user_id_fails(self):
         timestamp = datetime.datetime.now()
         with pytest.raises(ValueError):
-            IngestionSchema(timestamp=timestamp, page="/home")
+            IngestionSchema(timestamp=timestamp, referrer_page="/home")
 
     def test_create_schema_with_minimum_valid_values(self):
         timestamp = datetime.datetime.now()
-        schema = IngestionSchema(customer_id=1, timestamp=timestamp, page="/")
-
-        assert schema.customer_id == 1
+        schema = IngestionSchema(
+            user_id=123,
+            timestamp=timestamp,
+            referrer_page="/home",
+            event_type="VIEW",
+            session_id="session_1",
+        )
+        assert schema.user_id == 123
         assert schema.timestamp == timestamp
-        assert schema.page == "/"
-        assert schema.product_id is None
-        assert schema.genre is None
-        assert schema.price is None
+        assert schema.referrer_page == "/home"
+        assert schema.game_id is None
+        assert schema.event_type == "VIEW"
+        assert schema.session_id == "session_1"
 
-    def test_create_schema_without_customer_id(self):
+    def test_create_schema_without_user_id(self):
         timestamp = datetime.datetime.now()
 
         with pytest.raises(ValueError) as excinfo:
-            IngestionSchema(timestamp=timestamp, page="/home")
+            IngestionSchema(timestamp=timestamp, referrer_page="/home")
 
         assert "validation error" in str(excinfo.value)

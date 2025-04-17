@@ -9,7 +9,7 @@ from app.services.user_service import get_user_by_id
 
 class TestUser:
     @pytest.mark.asyncio
-    async def test_user_returns_user_when_valid_customer_id(self):
+    async def test_user_returns_user_when_valid_user_id(self):
         mock_user_model = MagicMock()
         mock_user_model.id = 1
         mock_user_model.username = "testuser"
@@ -33,7 +33,7 @@ class TestUser:
         mock_scalars.first.return_value = mock_user_model
 
         # Act
-        result = await get_user_by_id(customer_id=1, postgres_session=mock_session)
+        result = await get_user_by_id(user_id=1, postgres_session=mock_session)
 
         # Assert
         mock_session.execute.assert_called_once()

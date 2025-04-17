@@ -16,12 +16,12 @@ class TestIngestData:
         mocker.patch("fastapi.background.BackgroundTasks.add_task")
 
         test_data = IngestionSchema(
-            customer_id=123,
+            user_id=123,
+            game_id=456,
+            event_type="VIEW",
+            session_id="test-session",
             timestamp=datetime.now(),
-            page="/test-page",
-            product_id=456,
-            genre="test",
-            price=9.99,
+            referrer_page="/test-page",
         )
 
         response = await ingest_data(
@@ -39,7 +39,7 @@ class TestIngestData:
         pg_mock_client = mocker.AsyncMock()
         background_tasks = BackgroundTasks()
 
-        invalid_data = {"product_id": 456, "genre": "test", "price": 9.99}
+        invalid_data = {"game_id": 456, "genre": "test", "price": 9.99}
 
         with pytest.raises(ValidationError):
             await ingest_data(
@@ -54,12 +54,12 @@ class TestIngestDataEndpoint:
     @pytest.mark.asyncio
     def test_ingest_data_endpoint(self, client):
         test_data = {
-            "customer_id": 123,
+            "user_id": 123,
             "timestamp": datetime.now().isoformat(),
-            "page": "/test-page",
-            "product_id": 456,
-            "genre": "test",
-            "price": 9.99,
+            "referrer_page": "/test-page",
+            "game_id": 456,
+            "event_type": "VIEW",
+            "session_id": "test-session",
         }
 
         response = client.post("/api/v1/ingest", json=test_data)
@@ -69,7 +69,7 @@ class TestIngestDataEndpoint:
 
     @pytest.mark.asyncio
     def test_ingest_data_endpoint_invalid_data(self, client):
-        invalid_data = {"product_id": 456, "genre": "test", "price": 9.99}
+        invalid_data = {"game_id": 456}
 
         response = client.post("/api/v1/ingest", json=invalid_data)
         assert response.status_code == 422
