@@ -45,10 +45,10 @@ INSERT INTO game_genre (game_id, genre_id) VALUES
 (4, 3);  -- Street Fighter - Fighting
 
 -- Users
-INSERT INTO users (id, username, email, hashed_password, is_active, created_at, updated_at) VALUES
-(1, 'retrogamer', 'retro@example.com', 'hashed_password_1', true, NOW() - INTERVAL '1 year', NOW() - INTERVAL '1 year'),
-(2, 'collector', 'collector@example.com', 'hashed_password_2', true, NOW() - INTERVAL '6 months', NOW() - INTERVAL '6 months'),
-(3, 'casual_player', 'casual@example.com', 'hashed_password_3', true, NOW() - INTERVAL '1 month', NOW() - INTERVAL '1 month');
+INSERT INTO users (id, username, email, hashed_password, is_active, created_at) VALUES
+(1, 'retrogamer', 'retro@example.com', 'hashed_password_1', true, NOW() - INTERVAL '1 year'),
+(2, 'collector', 'collector@example.com', 'hashed_password_2', true, NOW() - INTERVAL '6 months'),
+(3, 'casual_player', 'casual@example.com', 'hashed_password_3', true, NOW() - INTERVAL '1 month');
 
 -- Reviews
 INSERT INTO reviews (id, game_id, user_id, rating, comment, created_at) VALUES
@@ -78,22 +78,66 @@ INSERT INTO cart_items (id, cart_id, game_id, quantity) VALUES
 
 -- Web Events
 INSERT INTO web_events (
-    id, user_id, game_id, event_type, session_id,
+    user_id, game_id, event_type, session_id,
     time_spent, referrer_page, platform, search_query,
     filters_applied, timestamp
 ) VALUES
-(1, 1, 1, 'VIEW', 'session_1', 
-    300, '/games', 'Web', NULL,
-    '{"platform": "NES"}', NOW() - INTERVAL '1 hour'),
-(2, 1, 1, 'ADD_TO_CART', 'session_1', 
-    60, '/games/1', 'Web', NULL,
-    NULL, NOW() - INTERVAL '55 minutes'),
-(3, 2, 3, 'VIEW', 'session_2', 
-    240, '/search', 'Mobile', 'castlevania',
-    '{"platform": "PS1"}', NOW() - INTERVAL '30 minutes'),
-(4, 3, 4, 'WISHLIST', 'session_3', 
-    120, '/games/featured', 'Web', NULL,
-    NULL, NOW() - INTERVAL '15 minutes');
+-- User 1 (retrogamer) - Shows interest in Nintendo and classic games
+(1, 1, 'VIEW', 'session_1a', 180, '/games', 'Web', NULL, '{"platform": "NES"}', NOW() - INTERVAL '3 days'),
+(1, 1, 'ADD_TO_CART', 'session_1a', 45, '/games/1', 'Web', NULL, NULL, NOW() - INTERVAL '3 days'),
+(1, 1, 'PURCHASE', 'session_1a', 120, '/cart', 'Web', NULL, NULL, NOW() - INTERVAL '3 days'),
+(1, NULL, 'VIEW', 'session_1b', 90, '/search', 'Web', 'mario', '{"publisher": "Nintendo"}', NOW() - INTERVAL '2 days 12 hours'),
+(1, 4, 'VIEW', 'session_1b', 240, '/games/4', 'Web', NULL, NULL, NOW() - INTERVAL '2 days 11 hours'),
+(1, 4, 'WISHLIST', 'session_1b', 30, '/games/4', 'Web', NULL, NULL, NOW() - INTERVAL '2 days 11 hours'),
+(1, NULL, 'VIEW', 'session_1c', 120, '/games', 'Mobile', NULL, '{"platform": "SNES"}', NOW() - INTERVAL '2 days'),
+(1, 2, 'VIEW', 'session_1c', 150, '/games/2', 'Mobile', NULL, NULL, NOW() - INTERVAL '2 days'),
+(1, 2, 'REVIEW', 'session_1c', 300, '/games/2/review', 'Mobile', NULL, NULL, NOW() - INTERVAL '2 days'),
+(1, NULL, 'VIEW', 'session_1d', 60, '/search', 'Web', 'castlevania', NULL, NOW() - INTERVAL '1 day'),
+(1, 3, 'VIEW', 'session_1d', 180, '/games/3', 'Web', NULL, NULL, NOW() - INTERVAL '1 day'),
+(1, 3, 'ADD_TO_CART', 'session_1d', 45, '/games/3', 'Web', NULL, NULL, NOW() - INTERVAL '1 day'),
+(1, 3, 'REMOVE_FROM_CART', 'session_1d', 30, '/cart', 'Web', NULL, NULL, NOW() - INTERVAL '1 day'),
+(1, NULL, 'VIEW', 'session_1e', 90, '/games/featured', 'Web', NULL, '{"is_rare": true}', NOW() - INTERVAL '12 hours'),
+(1, 1, 'VIEW', 'session_1e', 120, '/games/1', 'Web', NULL, NULL, NOW() - INTERVAL '12 hours'),
+(1, 4, 'VIEW', 'session_1e', 150, '/games/4', 'Web', NULL, NULL, NOW() - INTERVAL '11 hours'),
+-- User 2 (collector) - Focuses on rare and valuable games
+(2, NULL, 'VIEW', 'session_2a', 120, '/search', 'Web', NULL, '{"is_rare": true}', NOW() - INTERVAL '5 days'),
+(2, 3, 'VIEW', 'session_2a', 300, '/games/3', 'Web', NULL, NULL, NOW() - INTERVAL '5 days'),
+(2, 3, 'WISHLIST', 'session_2a', 30, '/games/3', 'Web', NULL, NULL, NOW() - INTERVAL '5 days'),
+(2, NULL, 'VIEW', 'session_2b', 180, '/games', 'Mobile', NULL, '{"has_original_box": true}', NOW() - INTERVAL '4 days'),
+(2, 1, 'VIEW', 'session_2b', 240, '/games/1', 'Mobile', NULL, NULL, NOW() - INTERVAL '4 days'),
+(2, 1, 'ADD_TO_CART', 'session_2b', 60, '/games/1', 'Mobile', NULL, NULL, NOW() - INTERVAL '4 days'),
+(2, NULL, 'VIEW', 'session_2c', 90, '/search', 'Web', 'rare games', '{"condition_rating": "9"}', NOW() - INTERVAL '3 days'),
+(2, 3, 'VIEW', 'session_2c', 180, '/games/3', 'Web', NULL, NULL, NOW() - INTERVAL '3 days'),
+(2, 3, 'ADD_TO_CART', 'session_2c', 45, '/games/3', 'Web', NULL, NULL, NOW() - INTERVAL '3 days'),
+(2, 3, 'PURCHASE', 'session_2c', 120, '/cart', 'Web', NULL, NULL, NOW() - INTERVAL '3 days'),
+(2, NULL, 'VIEW', 'session_2d', 150, '/games/featured', 'Web', NULL, '{"special_edition": true}', NOW() - INTERVAL '2 days'),
+(2, 4, 'VIEW', 'session_2d', 210, '/games/4', 'Web', NULL, NULL, NOW() - INTERVAL '2 days'),
+(2, NULL, 'VIEW', 'session_2e', 120, '/search', 'Mobile', 'symphony of the night', NULL, NOW() - INTERVAL '1 day'),
+(2, 3, 'VIEW', 'session_2e', 180, '/games/3', 'Mobile', NULL, NULL, NOW() - INTERVAL '1 day'),
+(2, 3, 'REVIEW', 'session_2e', 300, '/games/3/review', 'Mobile', NULL, NULL, NOW() - INTERVAL '1 day'),
+(2, NULL, 'VIEW', 'session_2f', 90, '/games', 'Web', NULL, '{"platform": "PS1"}', NOW() - INTERVAL '6 hours'),
+(2, 3, 'VIEW', 'session_2f', 150, '/games/3', 'Web', NULL, NULL, NOW() - INTERVAL '6 hours'),
+-- User 3 (casual_player) - Browses various games, price-sensitive
+(3, NULL, 'VIEW', 'session_3a', 60, '/games/featured', 'Mobile', NULL, NULL, NOW() - INTERVAL '7 days'),
+(3, 4, 'VIEW', 'session_3a', 120, '/games/4', 'Mobile', NULL, NULL, NOW() - INTERVAL '7 days'),
+(3, 4, 'WISHLIST', 'session_3a', 30, '/games/4', 'Mobile', NULL, NULL, NOW() - INTERVAL '7 days'),
+(3, NULL, 'VIEW', 'session_3b', 90, '/search', 'Web', NULL, '{"price_under": "100"}', NOW() - INTERVAL '6 days'),
+(3, 2, 'VIEW', 'session_3b', 150, '/games/2', 'Web', NULL, NULL, NOW() - INTERVAL '6 days'),
+(3, 2, 'ADD_TO_CART', 'session_3b', 45, '/games/2', 'Web', NULL, NULL, NOW() - INTERVAL '6 days'),
+(3, 2, 'REMOVE_FROM_CART', 'session_3b', 30, '/cart', 'Web', NULL, NULL, NOW() - INTERVAL '6 days'),
+(3, NULL, 'VIEW', 'session_3c', 120, '/games', 'Mobile', NULL, '{"platform": "SNES"}', NOW() - INTERVAL '5 days'),
+(3, 4, 'VIEW', 'session_3c', 180, '/games/4', 'Mobile', NULL, NULL, NOW() - INTERVAL '5 days'),
+(3, 4, 'ADD_TO_CART', 'session_3c', 45, '/games/4', 'Mobile', NULL, NULL, NOW() - INTERVAL '5 days'),
+(3, NULL, 'VIEW', 'session_3d', 90, '/search', 'Web', 'mario', NULL, NOW() - INTERVAL '4 days'),
+(3, 1, 'VIEW', 'session_3d', 120, '/games/1', 'Web', NULL, NULL, NOW() - INTERVAL '4 days'),
+(3, NULL, 'VIEW', 'session_3e', 60, '/games/featured', 'Web', NULL, '{"is_digital": true}', NOW() - INTERVAL '3 days'),
+(3, 3, 'VIEW', 'session_3e', 150, '/games/3', 'Web', NULL, NULL, NOW() - INTERVAL '3 days'),
+(3, NULL, 'VIEW', 'session_3f', 90, '/search', 'Mobile', 'fighting games', NULL, NOW() - INTERVAL '2 days'),
+(3, 4, 'VIEW', 'session_3f', 180, '/games/4', 'Mobile', NULL, NULL, NOW() - INTERVAL '2 days'),
+(3, 4, 'REVIEW', 'session_3f', 240, '/games/4/review', 'Mobile', NULL, NULL, NOW() - INTERVAL '2 days'),
+(3, NULL, 'VIEW', 'session_3g', 120, '/games', 'Web', NULL, '{"platform": "GENESIS"}', NOW() - INTERVAL '1 day'),
+(3, 2, 'VIEW', 'session_3g', 150, '/games/2', 'Web', NULL, NULL, NOW() - INTERVAL '1 day'),
+(3, 2, 'WISHLIST', 'session_3g', 30, '/games/2', 'Web', NULL, NULL, NOW() - INTERVAL '1 day');
 
 -- Reset sequence values
 SELECT setval('publishers_id_seq', (SELECT MAX(id) FROM publishers));
