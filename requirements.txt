@@ -15,4 +15,4 @@ redis==5.2.1
 loguru==0.7.3
 alembic==1.15.2
 prometheus-client==0.21.1
-locust==2.35.0
+locust==2.34.1.dev3
