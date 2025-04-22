@@ -66,8 +66,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(app_requests_total[1m])) by (endpoint)",
-          "interval": "",
+          "expr": "sum(increase(app_requests_total[1m])) by (endpoint)",
+          "interval": "1m",
           "legendFormat": "{{endpoint}}",
           "refId": "A"
         }
@@ -76,7 +76,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Request Rate by Endpoint",
+      "title": "Requests per Minute by Endpoint",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -161,8 +161,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(app_request_duration_seconds_bucket[5m])) by (le, endpoint))",
-          "interval": "",
+          "expr": "histogram_quantile(0.95, sum(increase(app_request_duration_seconds_bucket[1m])) by (le, endpoint))",
+          "interval": "1m",
           "legendFormat": "{{endpoint}}",
           "refId": "A"
         }
@@ -171,7 +171,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "95th Percentile Response Time",
+      "title": "95th Percentile Response Time per Minute",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -239,9 +239,7 @@
       "id": 6,
       "options": {
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -251,15 +249,15 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "sum(app_active_requests)",
-          "interval": "",
-          "legendFormat": "",
+          "expr": "avg_over_time(app_active_requests[1m])",
+          "interval": "1m",
+          "legendFormat": "Average Active Requests",
           "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Active Requests",
+      "title": "Average Active Requests per Minute",
       "type": "gauge"
     },
     {
@@ -310,8 +308,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(app_requests_total{status=\"error\"}[1m])) / sum(rate(app_requests_total[1m]))",
-          "interval": "",
+          "expr": "sum(increase(app_requests_total{status=\"error\"}[1m])) / sum(increase(app_requests_total[1m]))",
+          "interval": "1m",
           "legendFormat": "Error Rate",
           "refId": "A"
         }
@@ -320,7 +318,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Error Rate",
+      "title": "Error Rate per Minute",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -356,9 +354,146 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.5
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": ["mean"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.7",
+      "targets": [
+        {
+          "expr": "rate(app_request_duration_seconds_sum[1m]) / rate(app_request_duration_seconds_count[1m])",
+          "interval": "1m",
+          "legendFormat": "{{endpoint}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Average Response Time by Endpoint",
+      "type": "stat",
+      "repeatDirection": "h",
+      "maxPerRow": 4,
+      "repeat": "endpoint"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.5
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 12,
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Value"
+          }
+        ]
+      },
+      "pluginVersion": "7.3.7",
+      "targets": [
+        {
+          "expr": "topk(5, rate(app_request_duration_seconds_sum[1m]) / rate(app_request_duration_seconds_count[1m]))",
+          "interval": "1m",
+          "legendFormat": "{{endpoint}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Top 5 Slowest Endpoints (Average Response Time)",
+      "type": "table",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Value": "Response Time",
+              "endpoint": "Endpoint"
+            }
+          }
+        }
+      ]
     }
   ],
-  "refresh": "5s",
+  "refresh": "1m",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [],
@@ -366,7 +501,7 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
