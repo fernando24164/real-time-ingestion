@@ -22,6 +22,9 @@ class TestUser:
             username="testuser",
             email="test@example.com",
             created_at=mock_user_model.created_at,
+            is_active=True,
+            orders=[],
+            reviews=[],
         )
 
         mock_session = AsyncMock()
