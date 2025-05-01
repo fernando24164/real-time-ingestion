@@ -14,6 +14,7 @@ async def get_pg_connection(request: Request) -> AsyncGenerator[AsyncSession, No
         async with request.app.state.session_factory() as session:
             yield session
     except Exception as e:
+        await session.rollback()
         raise e
 
 
