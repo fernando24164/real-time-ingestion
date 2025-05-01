@@ -10,9 +10,26 @@ class User(BaseModel):
     username: str
     email: str
     created_at: datetime
+    is_active: bool
+    created_at: datetime
+    orders: list[int]
+    reviews: list[int]
 
     class Config:
         from_attributes = True
+
+
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    password: str
+    is_active: bool = True
+
+
+class UserUpdate(BaseModel):
+    username: str
+    email: str
+    is_active: bool
 
 
 class UserResponse(ResponseBase[User]):
