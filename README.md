@@ -1,6 +1,22 @@
+<p align="center">
+  <img src="media/real-time-logo.png" alt="Real Time Ingestion Logo" width="300">
+</p>
+
+<p align="center">
+  <a href="https://github.com/fernando24164/real-time-ingestion/actions/workflows/run-tests.yml">
+    <img src="https://github.com/fernando24164/real-time-ingestion/actions/workflows/run-tests.yml/badge.svg" alt="Tests Status">
+  </a>
+  <a href="https://www.python.org/downloads/release/python-3130/">
+    <img src="https://img.shields.io/badge/python-3.13-blue.svg" alt="Python 3.13">
+  </a>
+  <a href="https://fastapi.tiangolo.com/">
+    <img src="https://img.shields.io/badge/FastAPI-0.115.12-009688.svg" alt="FastAPI">
+  </a>
+</p>
+
 # Real time ingestion
 
-Project to check how FastAPI can handle real-time data ingestion and serve through a REST API.
+Handle real-time data ingestion and serve customer insights through a REST API.
 
 ## Features
 
