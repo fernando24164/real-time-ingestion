@@ -16,16 +16,10 @@
 
 # 🎮 Real-Time Game Store Ingestion API
 
-**Real-Time Game Store Ingestion API** demonstrates how to handle **real-time data ingestion** using **FastAPI**, **PostgreSQL**, and **Redis**, while providing a robust REST API for managing and analyzing customer interactions in a game store.
+**Real-Time Game Store Ingestion API** how to handle **real-time data ingestion** using **FastAPI**, **PostgreSQL**, and **Redis**, while providing a robust REST API for managing and analyzing customer interactions in a game store.
 
-## 🚀 Features
-
-- **Real-Time Data Ingestion**: Capture customer interactions like views, purchases, and wishlist additions.
-- **Redis Integration**: Store and retrieve the last viewed games for personalized recommendations.
-- **PostgreSQL Integration**: Persist customer interactions and game data for long-term analysis.
-- **Customer Insights**: Generate personalized insights, including platform preferences, genre interests, and engagement scores.
-- **Prometheus & Grafana Monitoring**: Track API performance and metrics with pre-configured dashboards.
-- **Scalable Architecture**: Built with Docker and Docker Compose for easy deployment and scalability.
+## Architecture
+![Architecture](media/game-store-c4.png)
 
 ---
 
