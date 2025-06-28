@@ -16,3 +16,5 @@ loguru==0.7.3
 alembic==1.15.2
 prometheus-client==0.21.1
 locust==2.34.1.dev3
+pre-commit==4.2.0
+ruff==0.12.1

@@ -1,0 +1,53 @@
+[tool.ruff]
+# Enable flake8-bugbear (`B`) rules.
+select = ["E", "F", "B", "I", "N", "UP", "ANN", "S", "A", "COM", "C4", "DTZ", "T10", "EM", "ISC"]
+ignore = ["ANN101", "ANN102", "ANN401"]
+
+line-length = 88
+indent-width = 4
+
+# Assume Python 3.9
+target-version = "py39"
+
+# Allow imports relative to the "src" and "app" directories.
+src = ["app"]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+# Use double quotes for strings.
+quote-style = "double"
+
+# Indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.ruff.isort]
+known-third-party = ["fastapi", "pydantic", "sqlalchemy", "redis", "alembic"]
+
+[tool.ruff.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.ruff.per-file-ignores]
+# Ignore imported but unused in __init__.py files
+"__init__.py" = ["F401"]
+# Ignore annotation issues in tests
+"tests/**/*.py" = ["ANN"]
+# Ignore some errors in migration files
+"app/migrations/**/*.py" = ["E501", "ANN"]
