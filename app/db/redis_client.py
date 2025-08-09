@@ -1,11 +1,12 @@
 import redis.asyncio as aioredis
-from redis.exceptions import ConnectionError
+from redis.exceptions import ConnectionError as RedisConnectionError
 
-from app.core.config import get_settings
+from app.core.config import settings
 
 
-def connect_redis_pool(settings: dict = get_settings()) -> aioredis.ConnectionPool:
+def connect_redis_pool() -> aioredis.ConnectionPool:
     try:
         return aioredis.ConnectionPool.from_url(settings.REDIS_URL, max_connections=10)
-    except ConnectionError as e:
-        raise ConnectionError(f"Failed to connect to Redis: {e}")
+    except RedisConnectionError as e:
+        message = f"Failed to connect to Redis: {e}"
+        raise RedisConnectionError(message) from e

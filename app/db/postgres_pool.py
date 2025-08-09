@@ -5,15 +5,15 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.core.config import get_settings
+from app.core.config import settings
 from app.models.game_store import Base
 
 
-def create_engine_pg(config=get_settings()) -> AsyncEngine:
+def create_engine_pg() -> AsyncEngine:
     async_engine = create_async_engine(
-        config.POSTGRES_DATABASE_URL,
-        pool_size=config.PG_POOL_SIZE,
-        max_overflow=config.PG_POOL_OVERFLOW,
+        settings.POSTGRES_DATABASE_URL,
+        pool_size=settings.PG_POOL_SIZE,
+        max_overflow=settings.PG_POOL_OVERFLOW,
     )
     return async_engine
 
