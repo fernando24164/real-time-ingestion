@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   redis:
@@ -16,6 +16,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
       POSTGRES_DB: postgres
+    mem_limit: 512m
     ports:
       - "5432:5432"
     volumes:
@@ -57,11 +58,11 @@ services:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.enable-lifecycle"
     restart: unless-stopped
     networks:
       - app-network
