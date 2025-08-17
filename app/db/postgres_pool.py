@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.core.config import settings
-from app.models.game_store import Base
 
 
 def create_engine_pg() -> AsyncEngine:
@@ -20,8 +19,3 @@ def create_engine_pg() -> AsyncEngine:
 
 def create_session_factory(engine: AsyncEngine) -> async_sessionmaker:
     return async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
-
-
-async def create_tables(engine: AsyncEngine) -> None:
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)

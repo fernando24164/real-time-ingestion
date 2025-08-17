@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.db.postgres_pool import create_engine_pg, create_session_factory, create_tables
+from app.db.postgres_pool import create_engine_pg, create_session_factory
 from app.db.redis_client import connect_redis_pool
 
 
@@ -13,8 +13,6 @@ async def startup_db_clients(app: FastAPI) -> None:
 
     session_factory = create_session_factory(engine)
     app.state.session_factory = session_factory
-
-    await create_tables(app.state.engine_pg)
 
 
 async def shutdown_db_clients(app: FastAPI) -> None:

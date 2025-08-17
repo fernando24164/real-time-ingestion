@@ -29,6 +29,7 @@ def get_application() -> FastAPI:
     """Returns a FastAPI application instance."""
     set_logger()
     app = FastAPI(
+        title=settings.PROJECT_NAME,
         description=settings.PROJECT_NAME,
         version=settings.VERSION,
         lifespan=lifespan,

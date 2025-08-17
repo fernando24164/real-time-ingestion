@@ -109,32 +109,48 @@ class Game(Base):
     release_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     publisher_id: Mapped[int] = mapped_column(Integer, ForeignKey("publishers.id"))
     platform: Mapped[PlatformType] = mapped_column(
-        SQLAlchemyEnum(PlatformType), nullable=False
+        SQLAlchemyEnum(
+            PlatformType,
+            name="platformtype",
+            native_enum=False,
+            create_constraint=False,
+            validate_strings=True,
+        ),
+        nullable=False,
     )
     stock: Mapped[int] = mapped_column(Integer, default=0)
     is_digital: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     region: Mapped[RegionType] = mapped_column(
-        SQLAlchemyEnum(RegionType), nullable=True
+        SQLAlchemyEnum(
+            RegionType,
+            name="regiontype",
+            native_enum=False,
+            create_constraint=False,
+            validate_strings=True,
+        ),
+        nullable=True,
     )  # NTSC, PAL, NTSC-J, etc.
     condition_rating: Mapped[Optional[int]] = mapped_column(
-        Integer
+        Integer,
     )  # 1-10 rating for physical items
     has_original_box: Mapped[Optional[bool]] = mapped_column(Boolean)
     has_manual: Mapped[Optional[bool]] = mapped_column(Boolean)
     is_rare: Mapped[Optional[bool]] = mapped_column(Boolean, default=False)
     collector_value: Mapped[Optional[Decimal]] = mapped_column(
-        Float(precision=2)
+        Float(precision=2),
     )  # Estimated collector's value
     serial_number: Mapped[Optional[str]] = mapped_column(
-        String(100)
+        String(100),
     )  # For authenticity verification
     special_edition: Mapped[Optional[bool]] = mapped_column(Boolean, default=False)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, server_default=func.now(), onupdate=func.now()
+        DateTime,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     # Relationships
@@ -151,6 +167,7 @@ class Genre(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     description: Mapped[str] = mapped_column(Text)
+    mean_rate: Mapped[Optional[float]] = mapped_column(Float(precision=2))
 
     # Relationships
     games = relationship("Game", secondary=game_genre, back_populates="genres")
@@ -172,14 +189,19 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, autoincrement=True, index=True
+        Integer,
+        primary_key=True,
+        autoincrement=True,
+        index=True,
     )
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, server_default=func.now()
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
     )
 
     # New relationships for e-commerce
@@ -193,13 +215,20 @@ class WebEvents(Base):
     __tablename__ = "web_events"
 
     id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, autoincrement=True, index=True
+        Integer,
+        primary_key=True,
+        autoincrement=True,
+        index=True,
     )
     user_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("users.id"), nullable=False
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False,
     )
     game_id: Mapped[Optional[int]] = mapped_column(
-        Integer, ForeignKey("games.id"), nullable=True  # Added ForeignKey constraint
+        Integer,
+        ForeignKey("games.id"),
+        nullable=True,  # Added ForeignKey constraint
     )
     event_type: Mapped[str] = mapped_column(
         String,
@@ -213,14 +242,18 @@ class WebEvents(Base):
     )
     referrer_page: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     platform: Mapped[Optional[str]] = mapped_column(
-        String, nullable=True
+        String,
+        nullable=True,
     )  # Web, mobile, app
     search_query: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     filters_applied: Mapped[Optional[str]] = mapped_column(
-        String, nullable=True
+        String,
+        nullable=True,
     )  # JSON string of applied filters
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, server_default=func.now()
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
     )
 
     # Relationships
@@ -237,7 +270,9 @@ class Review(Base):
     rating: Mapped[int] = mapped_column(Integer, nullable=False)  # 1-5 stars
     comment: Mapped[Optional[str]] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, server_default=func.now()
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
     )
 
     # Relationships
@@ -251,11 +286,15 @@ class Order(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     status: Mapped[OrderStatus] = mapped_column(
-        SQLAlchemyEnum(OrderStatus), nullable=False, default=OrderStatus.PENDING
+        SQLAlchemyEnum(OrderStatus, native_enum=False),
+        nullable=False,
+        default=OrderStatus.PENDING,
     )
     total_amount: Mapped[Decimal] = mapped_column(Float(precision=2), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, server_default=func.now()
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
     )
     updated_at: Mapped[datetime] = mapped_column(DateTime, onupdate=func.now())
 
@@ -284,7 +323,9 @@ class Cart(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), unique=True)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, server_default=func.now()
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
     )
     updated_at: Mapped[datetime] = mapped_column(DateTime, onupdate=func.now())
 

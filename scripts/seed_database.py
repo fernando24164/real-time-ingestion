@@ -12,6 +12,7 @@ async def seed_database():
     DB_PASSWORD = "mysecretpassword"
     DB_HOST = "localhost"
     DB_PORT = "5432"
+    SCHEMA_NAME = "game_store"
 
     try:
         # Create connection
@@ -22,11 +23,14 @@ async def seed_database():
             host=DB_HOST,
             port=DB_PORT,
         )
+
+        await conn.execute(f"SET search_path TO {SCHEMA_NAME}")
+
         logger.info("Connected to database successfully")
 
         # Read SQL file
         sql_file_path = Path(__file__).parent / "seed_data.sql"
-        with open(sql_file_path, "r") as file:
+        with open(sql_file_path) as file:
             sql_content = file.read()
 
         # Execute SQL commands
