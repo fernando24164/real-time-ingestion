@@ -6,9 +6,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from core.config import get_settings
-from models import Base
-from models.game_store import *
+from app.core.config import settings
+from app.models import Base
+from app.models.game_store import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -21,7 +21,7 @@ if config.config_file_name is not None:
 
 config.set_main_option(
     "sqlalchemy.url",
-    get_settings().POSTGRES_DATABASE_URL,
+    settings.POSTGRES_DATABASE_URL,
 )
 
 # add your model's MetaData object here
@@ -64,7 +64,7 @@ def do_run_migrations(connection: Connection) -> None:
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
-        version_table_schema="game_store",
+        version_table_schema=settings.POSTGRES_SCHEMA,
     )
 
     with context.begin_transaction():
