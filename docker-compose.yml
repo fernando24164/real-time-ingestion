@@ -7,6 +7,11 @@ services:
       - "6379:6379"
     volumes:
       - ./db/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - app-network
 
@@ -44,9 +49,9 @@ services:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
       prometheus:
-        condition: service_started
+        condition: service_healthy
     networks:
       - app-network
 
@@ -64,6 +69,12 @@ services:
       - "--web.console.libraries=/etc/prometheus/console_libraries"
       - "--web.console.templates=/etc/prometheus/consoles"
       - "--web.enable-lifecycle"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
     restart: unless-stopped
     networks:
       - app-network
