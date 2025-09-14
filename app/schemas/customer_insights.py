@@ -1,35 +1,40 @@
-from typing import List, Optional
 from datetime import datetime
+
 from pydantic import BaseModel
+
 
 class GenrePreference(BaseModel):
     genre_id: int
     genre_name: str
     view_count: int
 
+
 class UserPreferences(BaseModel):
-    preferred_platform: Optional[str]
+    preferred_platform: str | None
     avg_viewing_time: int
-    common_filters: List[str]
+    common_filters: list[str]
     price_sensitive: bool
-    preferred_genres: List[GenrePreference]
+    preferred_genres: list[GenrePreference]
+
 
 class GameRecommendation(BaseModel):
     game_id: int
     view_count: int
     last_viewed: datetime
-    genres: List[str]
+    genres: list[str]
+
 
 class PlatformStats(BaseModel):
     platform: str
     usage_count: int
     avg_time_spent: int
 
+
 class CustomerInsightResponse(BaseModel):
     user_id: int
     preferences: UserPreferences
-    recent_interests: List[GameRecommendation]
-    platform_usage: List[PlatformStats]
+    recent_interests: list[GameRecommendation]
+    platform_usage: list[PlatformStats]
     engagement_score: int  # 0-100 scale
 
     class Config:

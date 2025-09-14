@@ -1,14 +1,13 @@
-from typing import List, Tuple, Dict
-from sqlalchemy import select, desc, func, and_, text
+from sqlalchemy import and_, desc, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app.models.game_store import WebEvents, Game, Genre, game_genre
+from app.models.game_store import Game, Genre, WebEvents, game_genre
 from app.schemas.customer_insights import (
     GameRecommendation,
+    GenrePreference,
     PlatformStats,
     UserPreferences,
-    GenrePreference,
 )
 
 # Constants
@@ -18,8 +17,9 @@ ENGAGEMENT_SCORE_MAX = 100
 
 
 async def get_user_platform_preferences(
-    db: AsyncSession, user_id: int
-) -> Tuple[str, int]:
+    db: AsyncSession,
+    user_id: int,
+) -> tuple[str, int]:
     """Get user's preferred platform and usage count"""
     stmt = (
         select(WebEvents.platform, func.count(WebEvents.id).label("count"))
@@ -32,7 +32,7 @@ async def get_user_platform_preferences(
     return platform_stats[0], platform_stats[1] if platform_stats else ("", 0)
 
 
-async def get_user_filters(db: AsyncSession, user_id: int) -> List[str]:
+async def get_user_filters(db: AsyncSession, user_id: int) -> list[str]:
     """Get user's commonly used filters"""
     stmt = (
         select(WebEvents.filters_applied)
@@ -48,7 +48,8 @@ async def get_user_filters(db: AsyncSession, user_id: int) -> List[str]:
 async def get_average_viewing_time(db: AsyncSession, user_id: int) -> int:
     """Calculate average time spent viewing games"""
     stmt = select(func.avg(WebEvents.time_spent)).filter(
-        WebEvents.user_id == user_id, WebEvents.event_type == "VIEW"
+        WebEvents.user_id == user_id,
+        WebEvents.event_type == "VIEW",
     )
     result = await db.execute(stmt)
     return int(result.scalar() or 0)
@@ -57,7 +58,8 @@ async def get_average_viewing_time(db: AsyncSession, user_id: int) -> int:
 async def get_user_preferences(db: AsyncSession, user_id: int) -> UserPreferences:
     """Analyze user preferences based on their web events"""
     preferred_platform, platform_count = await get_user_platform_preferences(
-        db, user_id
+        db,
+        user_id,
     )
     filters = await get_user_filters(db, user_id)
     avg_time = await get_average_viewing_time(db, user_id)
@@ -73,8 +75,9 @@ async def get_user_preferences(db: AsyncSession, user_id: int) -> UserPreference
 
 
 async def get_game_genres(
-    db: AsyncSession, game_ids: List[int]
-) -> Dict[int, List[str]]:
+    db: AsyncSession,
+    game_ids: list[int],
+) -> dict[int, list[str]]:
     """Get genres for multiple games"""
     stmt = select(Game).options(joinedload(Game.genres)).filter(Game.id.in_(game_ids))
     result = await db.execute(stmt)
@@ -84,8 +87,9 @@ async def get_game_genres(
 
 
 async def get_genre_preferences(
-    db: AsyncSession, user_id: int
-) -> List[GenrePreference]:
+    db: AsyncSession,
+    user_id: int,
+) -> list[GenrePreference]:
     """Get user's preferred genres based on viewing history"""
     stmt = (
         select(Genre.id, Genre.name, func.count(WebEvents.id).label("view_count"))
@@ -112,8 +116,9 @@ async def get_genre_preferences(
 
 
 async def get_recent_interests(
-    db: AsyncSession, user_id: int
-) -> List[GameRecommendation]:
+    db: AsyncSession,
+    user_id: int,
+) -> list[GameRecommendation]:
     """Get user's recently viewed games with their genres"""
     stmt = (
         select(
@@ -148,7 +153,7 @@ async def get_recent_interests(
     ]
 
 
-async def get_platform_usage(db: AsyncSession, user_id: int) -> List[PlatformStats]:
+async def get_platform_usage(db: AsyncSession, user_id: int) -> list[PlatformStats]:
     """Get platform usage statistics"""
     stmt = (
         select(
@@ -163,7 +168,9 @@ async def get_platform_usage(db: AsyncSession, user_id: int) -> List[PlatformSta
 
     return [
         PlatformStats(
-            platform=platform, usage_count=int(count), avg_time_spent=int(avg_time or 0)
+            platform=platform,
+            usage_count=int(count),
+            avg_time_spent=int(avg_time or 0),
         )
         for platform, count, avg_time in result.all()
     ]

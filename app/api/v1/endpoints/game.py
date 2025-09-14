@@ -1,7 +1,3 @@
-from typing import List
-
-from fastapi import APIRouter, HTTPException, Query, status
-
 from app.api.deps import DBSessionDep
 from app.schemas.game import GameCreate, GameResponse, GameUpdate
 from app.services.exceptions import DuplicateEntry, NoGame
@@ -12,6 +8,7 @@ from app.services.game_service import (
     get_games,
     update_game,
 )
+from fastapi import APIRouter, HTTPException, Query, status
 
 game_router = APIRouter(prefix="/games", tags=["Games"])
 
@@ -24,10 +21,12 @@ async def create_new_game(
     try:
         db_game = await create_game(db, game)
         return GameResponse(
-            status="success", data=db_game, message="Game created successfully"
+            status="success",
+            data=db_game,
+            message="Game created successfully",
         )
     except DuplicateEntry as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
 
 @game_router.get("/{game_id}", response_model=GameResponse)
@@ -38,18 +37,20 @@ async def read_game(
     try:
         db_game = await get_game(db, game_id)
         return GameResponse(
-            status="success", data=db_game, message="Game retrieved successfully"
+            status="success",
+            data=db_game,
+            message="Game retrieved successfully",
         )
     except NoGame as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 
-@game_router.get("", response_model=List[GameResponse])
+@game_router.get("", response_model=list[GameResponse])
 async def read_games(
     db: DBSessionDep,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1),
-) -> List[GameResponse]:
+) -> list[GameResponse]:
     games = await get_games(db, skip, limit)
     return [
         GameResponse(status="success", data=game, message="Game retrieved successfully")
@@ -66,12 +67,14 @@ async def update_existing_game(
     try:
         db_game = await update_game(db, game_id, game)
         return GameResponse(
-            status="success", data=db_game, message="Game updated successfully"
+            status="success",
+            data=db_game,
+            message="Game updated successfully",
         )
     except NoGame as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e
     except DuplicateEntry as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
 
 @game_router.delete("/{game_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -82,4 +85,4 @@ async def delete_existing_game(
     try:
         await delete_game(db, game_id)
     except NoGame as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e

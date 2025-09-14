@@ -1,7 +1,3 @@
-from typing import List
-
-from fastapi import APIRouter, HTTPException, Query, status
-
 from app.api.deps import DBSessionDep
 from app.schemas.user import UserCreate, UserResponse, UserUpdate
 from app.services.exceptions import DuplicateEntry, NoUser
@@ -12,6 +8,7 @@ from app.services.user_service import (
     get_users,
     update_user,
 )
+from fastapi import APIRouter, HTTPException, Query, status
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -24,10 +21,12 @@ async def create_new_user(
     try:
         db_user = await create_user(db, user)
         return UserResponse(
-            status="success", data=db_user, message="User created successfully"
+            status="success",
+            data=db_user,
+            message="User created successfully",
         )
     except DuplicateEntry as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
 
 @user_router.get("/{user_id}", response_model=UserResponse)
@@ -38,21 +37,23 @@ async def read_user(
     try:
         user = await get_user_by_id(user_id, db)
         return UserResponse(
-            status="success", data=user, message="User retrieved successfully"
+            status="success",
+            data=user,
+            message="User retrieved successfully",
         )
-    except NoUser:
+    except NoUser as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with ID {user_id} not found",
-        )
+        ) from e
 
 
-@user_router.get("", response_model=List[UserResponse])
+@user_router.get("", response_model=list[UserResponse])
 async def read_users(
     db: DBSessionDep,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1),
-) -> List[UserResponse]:
+) -> list[UserResponse]:
     users = await get_users(db, skip, limit)
     return [
         UserResponse(status="success", data=user, message="User retrieved successfully")
@@ -69,12 +70,14 @@ async def update_existing_user(
     try:
         db_user = await update_user(db, user_id, user)
         return UserResponse(
-            status="success", data=db_user, message="User updated successfully"
+            status="success",
+            data=db_user,
+            message="User updated successfully",
         )
     except NoUser as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e
     except DuplicateEntry as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
 
 @user_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -85,4 +88,4 @@ async def delete_existing_user(
     try:
         await delete_user(db, user_id)
     except NoUser as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e

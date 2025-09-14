@@ -1,5 +1,4 @@
 from functools import lru_cache
-from typing import Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
@@ -34,7 +33,7 @@ class Settings(BaseSettings):
     CORS_HEADERS: list[str] = Field(default=["*"], alias="CORS_HEADERS")
 
     # Cache Settings
-    REDIS_URL: Optional[str] = Field(
+    REDIS_URL: str | None = Field(
         default="redis://localhost:6379/0",
         alias="REDIS_URL",
         description="Redis connection string",

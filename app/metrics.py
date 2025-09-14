@@ -1,6 +1,7 @@
 import time
+from collections.abc import Callable
 from functools import wraps
-from typing import Callable, Optional
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 from loguru import logger
@@ -17,7 +18,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 # Create HTTP request metrics
 REQUEST_COUNT = Counter(
-    "app_requests_total", "Total number of requests", ["method", "endpoint", "status"]
+    "app_requests_total",
+    "Total number of requests",
+    ["method", "endpoint", "status"],
 )
 
 ACTIVE_REQUESTS = Gauge("app_active_requests", "Current number of active requests")
@@ -30,7 +33,9 @@ REQUEST_DURATION = Histogram(
 )
 
 REQUEST_SIZE = Summary(
-    "app_request_size_bytes", "Request size in bytes", ["method", "endpoint"]
+    "app_request_size_bytes",
+    "Request size in bytes",
+    ["method", "endpoint"],
 )
 
 # Application-specific metrics
@@ -42,15 +47,19 @@ DB_QUERY_DURATION = Histogram(
 )
 
 CACHE_HIT_COUNTER = Counter(
-    "app_cache_hits_total", "Total number of cache hits", ["cache_name"]
+    "app_cache_hits_total",
+    "Total number of cache hits",
+    ["cache_name"],
 )
 
 CACHE_MISS_COUNTER = Counter(
-    "app_cache_misses_total", "Total number of cache misses", ["cache_name"]
+    "app_cache_misses_total",
+    "Total number of cache misses",
+    ["cache_name"],
 )
 
 
-def start_metrics_server(port=8001):
+def start_metrics_server(port: int = 8001) -> None:
     start_http_server(port)
     logger.info(f"Prometheus metrics available at http://localhost:{port}/metrics")
 
@@ -76,7 +85,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
             status = response.status_code
             REQUEST_SIZE.labels(method=method, endpoint=path).observe(
-                int(response.headers.get("content-length", 0))
+                int(response.headers.get("content-length", 0)),
             )
             return response
         except Exception as e:
@@ -89,12 +98,12 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             ACTIVE_REQUESTS.dec()
 
 
-def track_request_duration(method, endpoint):
+def track_request_duration(method: str, endpoint: str) -> Callable:
     """Legacy decorator to measure request duration (non-async)"""
 
-    def decorator(func):
+    def decorator(func: Callable) -> Callable:
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             ACTIVE_REQUESTS.inc()
             start_time = time.time()
             try:
@@ -107,10 +116,12 @@ def track_request_duration(method, endpoint):
             finally:
                 duration = time.time() - start_time
                 REQUEST_DURATION.labels(method=method, endpoint=endpoint).observe(
-                    duration
+                    duration,
                 )
                 REQUEST_COUNT.labels(
-                    method=method, endpoint=endpoint, status=status
+                    method=method,
+                    endpoint=endpoint,
+                    status=status,
                 ).inc()
                 ACTIVE_REQUESTS.dec()
 
@@ -119,19 +130,19 @@ def track_request_duration(method, endpoint):
     return decorator
 
 
-def track_db_query_duration(query_type: str, table: str):
+def track_db_query_duration(query_type: str, table: str) -> Callable:
     """Decorator to track database query duration"""
 
-    def decorator(func):
+    def decorator(func: Callable) -> Callable:
         @wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
             start_time = time.time()
             try:
                 return await func(*args, **kwargs)
             finally:
                 duration = time.time() - start_time
                 DB_QUERY_DURATION.labels(query_type=query_type, table=table).observe(
-                    duration
+                    duration,
                 )
 
         return wrapper
@@ -139,12 +150,12 @@ def track_db_query_duration(query_type: str, table: str):
     return decorator
 
 
-def track_cache(cache_name: str):
+def track_cache(cache_name: str) -> Callable:
     """Decorator to track cache hits and misses"""
 
-    def decorator(func):
+    def decorator(func: Callable) -> Callable:
         @wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
             result = await func(*args, **kwargs)
             if result is None:
                 CACHE_MISS_COUNTER.labels(cache_name=cache_name).inc()
@@ -158,8 +169,10 @@ def track_cache(cache_name: str):
 
 
 def setup_metrics(
-    app: FastAPI, metrics_endpoint: bool = True, metrics_port: Optional[int] = None
-):
+    app: FastAPI,
+    metrics_endpoint: bool = True,
+    metrics_port: int | None = None,
+) -> FastAPI:
     """
     Setup Prometheus metrics collection for a FastAPI app
 
@@ -174,7 +187,7 @@ def setup_metrics(
     if metrics_endpoint:
 
         @app.get("/metrics")
-        def metrics():
+        def metrics() -> Response:
             return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
     if metrics_port:

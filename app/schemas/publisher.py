@@ -1,22 +1,26 @@
-from typing import Optional
 from pydantic import BaseModel, HttpUrl
+
 
 class PublisherBase(BaseModel):
     name: str
-    website: Optional[HttpUrl] = None
-    founded_year: Optional[int] = None
+    website: HttpUrl | None = None
+    founded_year: int | None = None
+
 
 class PublisherCreate(PublisherBase):
     pass
 
+
 class PublisherUpdate(PublisherBase):
-    name: Optional[str] = None
+    name: str | None = None
+
 
 class PublisherInDB(PublisherBase):
     id: int
 
     class Config:
         from_attributes = True
+
 
 class PublisherResponse(BaseModel):
     status: str

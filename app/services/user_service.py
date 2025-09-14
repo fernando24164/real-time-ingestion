@@ -1,17 +1,16 @@
-from typing import Optional
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.game_store import User
-from app.schemas.user import User as UserSchema, UserCreate
-from app.schemas.user import UserUpdate
+from app.schemas.user import User as UserSchema
+from app.schemas.user import UserCreate, UserUpdate
 from app.services.exceptions import NoUser
 
 
 async def create_user(
-    postgres_session: AsyncSession, user: UserCreate
-) -> Optional[UserSchema]:
+    postgres_session: AsyncSession,
+    user: UserCreate,
+) -> UserSchema | None:
     """
     Args:
         postgres_session: The async database session
@@ -28,8 +27,9 @@ async def create_user(
 
 
 async def get_user_by_id(
-    user_id: int, postgres_session: AsyncSession
-) -> Optional[UserSchema]:
+    user_id: int,
+    postgres_session: AsyncSession,
+) -> UserSchema | None:
     """
     Args:
         user_id: The ID of the user to retrieve
@@ -46,13 +46,16 @@ async def get_user_by_id(
     user = result.scalars().first()
 
     if not user:
-        raise NoUser(f"No user found for the customer {user_id}")
+        msg = f"No user found for the customer {user_id}"
+        raise NoUser(msg)
 
     return UserSchema.model_validate(user)
 
 
 async def get_users(
-    postgres_session: AsyncSession, skip: int = 0, limit: int = 100
+    postgres_session: AsyncSession,
+    skip: int = 0,
+    limit: int = 100,
 ) -> list[UserSchema]:
     """
     Args:
@@ -69,8 +72,10 @@ async def get_users(
 
 
 async def update_user(
-    db: AsyncSession, user_id: int, user: UserUpdate
-) -> Optional[UserSchema]:
+    db: AsyncSession,
+    user_id: int,
+    user: UserUpdate,
+) -> UserSchema | None:
     db_user = await get_user_by_id(user_id, db)
     for field, value in user.model_dump().items():
         setattr(db_user, field, value)

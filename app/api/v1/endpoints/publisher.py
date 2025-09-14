@@ -1,20 +1,23 @@
-from fastapi import APIRouter, HTTPException, Query, status
-from typing import List
-
 from app.api.deps import DBSessionDep
-from app.schemas.publisher import PublisherCreate, PublisherUpdate, PublisherResponse
-from app.services.exceptions import NoPublisher, DuplicateEntry
+from app.schemas.publisher import PublisherCreate, PublisherResponse, PublisherUpdate
+from app.services.exceptions import DuplicateEntry, NoPublisher
 from app.services.publisher_service import (
     create_publisher,
+    delete_publisher,
     get_publisher,
     get_publishers,
     update_publisher,
-    delete_publisher,
 )
+from fastapi import APIRouter, HTTPException, Query, status
 
 publisher_router = APIRouter(prefix="/publishers", tags=["Publishers"])
 
-@publisher_router.post("", response_model=PublisherResponse, status_code=status.HTTP_201_CREATED)
+
+@publisher_router.post(
+    "",
+    response_model=PublisherResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_new_publisher(
     publisher: PublisherCreate,
     db: DBSessionDep,
@@ -24,10 +27,11 @@ async def create_new_publisher(
         return PublisherResponse(
             status="success",
             data=db_publisher,
-            message="Publisher created successfully"
+            message="Publisher created successfully",
         )
     except DuplicateEntry as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
+
 
 @publisher_router.get("/{publisher_id}", response_model=PublisherResponse)
 async def read_publisher(
@@ -39,26 +43,28 @@ async def read_publisher(
         return PublisherResponse(
             status="success",
             data=db_publisher,
-            message="Publisher retrieved successfully"
+            message="Publisher retrieved successfully",
         )
     except NoPublisher as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
-@publisher_router.get("", response_model=List[PublisherResponse])
+
+@publisher_router.get("", response_model=list[PublisherResponse])
 async def read_publishers(
     db: DBSessionDep,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1),
-) -> List[PublisherResponse]:
+) -> list[PublisherResponse]:
     publishers = await get_publishers(db, skip, limit)
     return [
         PublisherResponse(
             status="success",
             data=publisher,
-            message="Publisher retrieved successfully"
+            message="Publisher retrieved successfully",
         )
         for publisher in publishers
     ]
+
 
 @publisher_router.put("/{publisher_id}", response_model=PublisherResponse)
 async def update_existing_publisher(
@@ -71,12 +77,13 @@ async def update_existing_publisher(
         return PublisherResponse(
             status="success",
             data=db_publisher,
-            message="Publisher updated successfully"
+            message="Publisher updated successfully",
         )
     except NoPublisher as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e
     except DuplicateEntry as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
+
 
 @publisher_router.delete("/{publisher_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_existing_publisher(
@@ -86,4 +93,4 @@ async def delete_existing_publisher(
     try:
         await delete_publisher(db, publisher_id)
     except NoPublisher as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e

@@ -17,7 +17,7 @@ from app.metrics import setup_metrics
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     logger.info("Starting application")
     await startup_db_clients(app)
     yield

@@ -1,7 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
 
 from sqlalchemy import (
     Boolean,
@@ -132,19 +131,19 @@ class Game(Base):
         ),
         nullable=True,
     )  # NTSC, PAL, NTSC-J, etc.
-    condition_rating: Mapped[Optional[int]] = mapped_column(
+    condition_rating: Mapped[int | None] = mapped_column(
         Integer,
     )  # 1-10 rating for physical items
-    has_original_box: Mapped[Optional[bool]] = mapped_column(Boolean)
-    has_manual: Mapped[Optional[bool]] = mapped_column(Boolean)
-    is_rare: Mapped[Optional[bool]] = mapped_column(Boolean, default=False)
-    collector_value: Mapped[Optional[Decimal]] = mapped_column(
+    has_original_box: Mapped[bool | None] = mapped_column(Boolean)
+    has_manual: Mapped[bool | None] = mapped_column(Boolean)
+    is_rare: Mapped[bool | None] = mapped_column(Boolean, default=False)
+    collector_value: Mapped[Decimal | None] = mapped_column(
         Float(precision=2),
     )  # Estimated collector's value
-    serial_number: Mapped[Optional[str]] = mapped_column(
+    serial_number: Mapped[str | None] = mapped_column(
         String(100),
     )  # For authenticity verification
-    special_edition: Mapped[Optional[bool]] = mapped_column(Boolean, default=False)
+    special_edition: Mapped[bool | None] = mapped_column(Boolean, default=False)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
@@ -167,7 +166,7 @@ class Genre(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     description: Mapped[str] = mapped_column(Text)
-    mean_rate: Mapped[Optional[float]] = mapped_column(Float(precision=2))
+    mean_rate: Mapped[float | None] = mapped_column(Float(precision=2))
 
     # Relationships
     games = relationship("Game", secondary=game_genre, back_populates="genres")
@@ -178,8 +177,8 @@ class Publisher(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    website: Mapped[Optional[str]] = mapped_column(String(255))
-    founded_year: Mapped[Optional[int]] = mapped_column(Integer)
+    website: Mapped[str | None] = mapped_column(String(255))
+    founded_year: Mapped[int | None] = mapped_column(Integer)
 
     # Relationships
     games = relationship("Game", back_populates="publisher")
@@ -225,7 +224,7 @@ class WebEvents(Base):
         ForeignKey("users.id"),
         nullable=False,
     )
-    game_id: Mapped[Optional[int]] = mapped_column(
+    game_id: Mapped[int | None] = mapped_column(
         Integer,
         ForeignKey("games.id"),
         nullable=True,  # Added ForeignKey constraint
@@ -236,17 +235,17 @@ class WebEvents(Base):
         # Types: VIEW, ADD_TO_CART, REMOVE_FROM_CART, WISHLIST, PURCHASE, REVIEW
     )
     session_id: Mapped[str] = mapped_column(String, nullable=False)
-    time_spent: Mapped[Optional[int]] = mapped_column(
+    time_spent: Mapped[int | None] = mapped_column(
         Integer,
         nullable=True,  # Time spent in seconds on game page
     )
-    referrer_page: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    platform: Mapped[Optional[str]] = mapped_column(
+    referrer_page: Mapped[str | None] = mapped_column(String, nullable=True)
+    platform: Mapped[str | None] = mapped_column(
         String,
         nullable=True,
     )  # Web, mobile, app
-    search_query: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    filters_applied: Mapped[Optional[str]] = mapped_column(
+    search_query: Mapped[str | None] = mapped_column(String, nullable=True)
+    filters_applied: Mapped[str | None] = mapped_column(
         String,
         nullable=True,
     )  # JSON string of applied filters
@@ -268,7 +267,7 @@ class Review(Base):
     game_id: Mapped[int] = mapped_column(Integer, ForeignKey("games.id"))
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     rating: Mapped[int] = mapped_column(Integer, nullable=False)  # 1-5 stars
-    comment: Mapped[Optional[str]] = mapped_column(Text)
+    comment: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
