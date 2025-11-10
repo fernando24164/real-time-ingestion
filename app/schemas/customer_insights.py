@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class GenrePreference(BaseModel):
@@ -37,5 +37,4 @@ class CustomerInsightResponse(BaseModel):
     platform_usage: list[PlatformStats]
     engagement_score: int  # 0-100 scale
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -51,7 +51,6 @@ class TestIngestData:
 
 
 class TestIngestDataEndpoint:
-    @pytest.mark.asyncio
     def test_ingest_data_endpoint(self, client):
         test_data = {
             "user_id": 123,
@@ -65,9 +64,8 @@ class TestIngestDataEndpoint:
         response = client.post("/api/v1/ingest", json=test_data)
 
         assert response.status_code == 202
-        assert response.json().get('status') == "accepted"
+        assert response.json().get("status") == "accepted"
 
-    @pytest.mark.asyncio
     def test_ingest_data_endpoint_invalid_data(self, client):
         invalid_data = {"game_id": 456}
 

@@ -1,16 +1,48 @@
+[project]
+name = "real-time-ingestion"
+version = "1.0.0"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic==1.17.1",
+    "asyncpg==0.30.0",
+    "fastapi==0.121.1",
+    "gunicorn==23.0.0",
+    "loguru==0.7.3",
+    "orjson==3.11.4",
+    "prometheus-client==0.23.1",
+    "pydantic==2.12.4",
+    "pydantic-settings==2.12.0",
+    "redis==7.0.1",
+    "sqlalchemy==2.0.44",
+    "uvicorn==0.38.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff==0.14.4",
+    "pre-commit==4.4.0",
+    "pytest==8.4.2",
+    "pytest-asyncio==1.3.0",
+    "pytest-mock==3.15.1",
+    "httpx==0.28.1",
+    "locust==2.42.2",
+]
+
+
 [tool.ruff]
-# Enable flake8-bugbear (`B`) rules.
-select = ["E", "F", "B", "I", "N", "UP", "ANN", "S", "A", "COM", "C4", "DTZ", "T10", "EM", "ISC"]
-ignore = ["ANN101", "ANN102", "ANN401"]
-
 line-length = 88
-indent-width = 4
+target-version = "py313"
 
-# Assume Python 3.9
-target-version = "py39"
-
-# Allow imports relative to the "src" and "app" directories.
-src = ["app"]
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "F",   # pyflakes
+  "B",   # flake8-bugbear (good extra checks)
+  "I",   # import sorting / isort style
+]
+ignore = [
+  "ANN401",  # missing return type annotation on magic methods
+]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
@@ -32,19 +64,7 @@ skip-magic-trailing-comma = false
 # Automatically detect the appropriate line ending.
 line-ending = "auto"
 
-[tool.ruff.isort]
-known-third-party = ["fastapi", "pydantic", "sqlalchemy", "redis", "alembic"]
-
-[tool.ruff.flake8-annotations]
-allow-star-arg-any = true
-
-[tool.ruff.flake8-quotes]
-docstring-quotes = "double"
-
-[tool.ruff.mccabe]
-max-complexity = 10
-
-[tool.ruff.per-file-ignores]
+[tool.lint.per-file-ignores]
 # Ignore imported but unused in __init__.py files
 "__init__.py" = ["F401"]
 # Ignore annotation issues in tests

@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from math import ceil
 from typing import Any
 
@@ -46,7 +46,7 @@ async def update_session_insights(
     session_exists = await redis_client.exists(session_key)
 
     # Get current timestamp for calculations
-    current_time = datetime.now(timezone.utc)
+    current_time = datetime.now(UTC)
 
     # Start a Redis pipeline for atomic operations
     pipeline = redis_client.pipeline()
@@ -64,10 +64,10 @@ async def update_session_insights(
             "event_counts": json.dumps({}),
             "referrer_pages": json.dumps([]),
         }
-        pipeline.hset(session_key, mapping=session_data)
+        await pipeline.hset(session_key, mapping=session_data)
     else:
         # Update last activity time
-        pipeline.hset(session_key, "last_activity", current_time.isoformat())
+        await pipeline.hset(session_key, "last_activity", current_time.isoformat())
 
     # Update event counts
     event_counts_json: bytes | None = await redis_client.hget(
@@ -80,15 +80,15 @@ async def update_session_insights(
         event_counts = {}
 
     event_counts[data.event_type] = event_counts.get(data.event_type, 0) + 1
-    pipeline.hset(session_key, "event_counts", json.dumps(event_counts))
+    await pipeline.hset(session_key, "event_counts", json.dumps(event_counts))
 
     # Update page views if this is a VIEW event
     if data.event_type == "VIEW":
-        pipeline.hincrby(session_key, "page_views", 1)
+        await pipeline.hincrby(session_key, "page_views", 1)
 
     # Update time spent if available
     if data.time_spent:
-        pipeline.hincrby(session_key, "total_time_spent", data.time_spent)
+        await pipeline.hincrby(session_key, "total_time_spent", data.time_spent)
 
     # Update games viewed if this is a game view
     if data.event_type == "VIEW" and data.game_id:
@@ -107,7 +107,7 @@ async def update_session_insights(
             # Limit to 10 most recent games (keep the last 10)
             if len(games_viewed) > 10:
                 games_viewed = games_viewed[-10:]
-            pipeline.hset(session_key, "games_viewed", json.dumps(games_viewed))
+            await pipeline.hset(session_key, "games_viewed", json.dumps(games_viewed))
 
     # Update referrer pages
     if data.referrer_page:
@@ -122,10 +122,14 @@ async def update_session_insights(
 
         if data.referrer_page not in referrer_pages:
             referrer_pages.append(data.referrer_page)
-            pipeline.hset(session_key, "referrer_pages", json.dumps(referrer_pages))
+            await pipeline.hset(
+                session_key,
+                "referrer_pages",
+                json.dumps(referrer_pages),
+            )
 
     # Set expiration time (24 hours)
-    pipeline.expire(session_key, 60 * 60 * 24)
+    await pipeline.expire(session_key, 60 * 60 * 24)
 
     # Execute all commands atomically
     await pipeline.execute()

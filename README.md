@@ -112,7 +112,7 @@ real-time-ingestion/
 ├── scripts/                # Database seeding scripts
 ├── tests/                  # Unit and integration tests
 ├── docker-compose.yml      # Docker Compose configuration
-├── requirements.txt        # Python dependencies
+├── pyproject.toml          # Python dependencies
 └── README.md               # Project documentation
 ```
 
@@ -135,7 +135,7 @@ real-time-ingestion/
 
 2. **Install Dependencies**:
    ```bash
-   pip install -r requirements.txt
+   uv sync --locked
    ```
 
 3. **Run with Docker**:
@@ -243,7 +243,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 - Special thanks to the FastAPI, PostgreSQL, and Redis communities.
 - [Tiangolo FastAPI template](https://github.com/fastapi/full-stack-fastapi-template)
-- [Real world example in FastAPI deprecated but good to take a look](https://github.com/nsidnev/fastapi-realworld-example-app) 
+- [Real world example in FastAPI deprecated but good to take a look](https://github.com/nsidnev/fastapi-realworld-example-app)
 
 ---
 

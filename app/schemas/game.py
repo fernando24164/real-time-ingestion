@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class GameBase(BaseModel):
@@ -22,8 +22,7 @@ class GameBase(BaseModel):
     genres: list[str]
     reviews: list[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GameCreate(GameBase):
@@ -37,8 +36,7 @@ class GameUpdate(GameBase):
 class GameInDB(GameBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GameResponse(BaseModel):

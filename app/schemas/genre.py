@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class GenreBase(BaseModel):
@@ -18,8 +18,7 @@ class GenreUpdate(GenreBase):
 class GenreInDB(GenreBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GenreResponse(BaseModel):

@@ -57,7 +57,8 @@ class TestSessionInsights:
 
     @pytest.mark.asyncio
     async def test_get_session_insights_returns_none_when_session_not_exists(
-        self, mocker
+        self,
+        mocker,
     ):
         # Arrange
         session_id = "nonexistent-session"
@@ -94,7 +95,7 @@ class TestSessionInsights:
         mock_redis.hget = mocker.AsyncMock(side_effect=mock_hget)
 
         # Create a proper pipeline mock structure
-        mock_pipeline = mocker.Mock()
+        mock_pipeline = mocker.AsyncMock()
         mock_pipeline.hset = mocker.AsyncMock()
         mock_pipeline.expire = mocker.AsyncMock()
         mock_pipeline.execute = mocker.AsyncMock()
@@ -139,7 +140,7 @@ class TestSessionInsights:
             json.dumps(["/games"]).encode("utf-8"),
         ]
 
-        mock_pipeline = mocker.Mock()
+        mock_pipeline = mocker.AsyncMock()
         mock_pipeline.execute = mocker.AsyncMock()
         mock_redis.pipeline = mocker.Mock(return_value=mock_pipeline)
 
@@ -182,7 +183,7 @@ class TestSessionInsights:
             json.dumps(["/games"]).encode("utf-8"),
         ]
 
-        mock_pipeline = mocker.Mock()
+        mock_pipeline = mocker.AsyncMock()
         mock_pipeline.execute = mocker.AsyncMock()
         mock_redis.pipeline = mocker.Mock(return_value=mock_pipeline)
 
@@ -220,7 +221,8 @@ class TestSessionInsights:
 class TestSessionInsightsEndpoint:
     @pytest.mark.asyncio
     async def test_get_session_analytics_returns_insights_when_session_exists(
-        self, mocker
+        self,
+        mocker,
     ):
         # Arrange
         session_id = "test-session-123"
@@ -259,14 +261,16 @@ class TestSessionInsightsEndpoint:
 
     @pytest.mark.asyncio
     async def test_get_session_analytics_raises_404_when_session_not_found(
-        self, mocker
+        self,
+        mocker,
     ):
         # Arrange
         session_id = "nonexistent-session"
 
         # Mock the get_session_insights function to return None
         mocker.patch(
-            "app.services.ingestion_service.get_session_insights", return_value=None
+            "app.services.ingestion_service.get_session_insights",
+            return_value=None,
         )
 
         mock_redis = mocker.AsyncMock()

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, ConfigDict, HttpUrl
 
 
 class PublisherBase(BaseModel):
@@ -18,8 +18,7 @@ class PublisherUpdate(PublisherBase):
 class PublisherInDB(PublisherBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PublisherResponse(BaseModel):
