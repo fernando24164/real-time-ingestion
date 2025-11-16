@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/badge/python-3.13-blue.svg" alt="Python 3.13">
   </a>
   <a href="https://fastapi.tiangolo.com/">
-    <img src="https://img.shields.io/badge/FastAPI-0.115.12-009688.svg" alt="FastAPI">
+    <img src="https://img.shields.io/badge/FastAPI-0.121.1-009688.svg" alt="FastAPI">
   </a>
 </p>
 
