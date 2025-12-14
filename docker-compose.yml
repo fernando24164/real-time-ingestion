@@ -35,6 +35,19 @@ services:
     networks:
       - app-network
 
+  migration:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    command: uv run alembic upgrade head
+    environment:
+      POSTGRES_DATABASE_URL: "postgresql+asyncpg://postgres:mysecretpassword@postgres:5432/postgres"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
   fastapi:
     build:
       context: .
@@ -48,6 +61,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migration:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
       prometheus:
